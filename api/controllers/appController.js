@@ -81,6 +81,20 @@ exports.changeSnackQuant = function(req,res){
 
 //admin
 exports.deleteSnack = function(req,res){
+    
+    var hash = req.headers.authorization;
+    hash = hash.replace("Basic ","");
+    var nhash = new Buffer(hash,"base64").toString();
+    
+    var data = nhash.split(":");
+    
+    Users.findOne({"name":data[0],"pass":data[1]},function(err,auth){
+       if(!auth) {res.send(401);}
+       else {
+           
+       }
+    });
+    
     Snacks.remove({name:req.params.snackId},function(err,snack){
         if(err) res.send(err);
         res.json({message:"Snack eliminada"});
