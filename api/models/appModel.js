@@ -27,7 +27,8 @@ var snacks = new Schema({
         type: Number
     },
     likes: {
-        type: Number
+        type: Number,
+        default: 0
     }
 });
 var log = new Schema({

@@ -9,6 +9,9 @@ module.exports = function(app) {
         .get(store.getOneSnack)
         .delete(store.deleteSnack);
         
+    app.route("/snacks/like/:snackId")    
+        .post(store.likeSnack);
+        
     app.route("/snacks/:snackId/:quantity")
         .post(store.changeSnackQuant);
     

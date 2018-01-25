@@ -9,6 +9,7 @@ var sortJsonArray = require('sort-json-array');
 
 //anyone can see all snacks
 exports.getAllSnacks = function(req, res){
+    var 
     var orderby = req.query.orderBy;
     Snacks.find({}, function(err, snack){
         if(err) res.send(err);
@@ -91,13 +92,15 @@ exports.deleteSnack = function(req,res){
     Users.findOne({"name":data[0],"pass":data[1]},function(err,auth){
        if(!auth) {res.send(401);}
        else {
-           
+           if(auth.type != "admin"){
+               res.send(401);
+           } else {
+                Snacks.remove({name:req.params.snackId},function(err,snack){
+                    if(err) res.send(err);
+                    res.json({message:"Snack eliminada"});
+                });        
+           }
        }
-    });
-    
-    Snacks.remove({name:req.params.snackId},function(err,snack){
-        if(err) res.send(err);
-        res.json({message:"Snack eliminada"});
     });
 };
 
@@ -176,36 +179,49 @@ exports.getPriceLog = function(req,res){
 
 // logged users
 exports.buySnack = function(req,res){
-    Snacks.findOne({"name":req.params.snackId}, function(err, buy){
+    
+    var hash = req.headers.authorization;
+    hash = hash.replace("Basic ","");
+    var nhash = new Buffer(hash,"base64").toString();
+    
+    var data = nhash.split(":");
+    
+    Users.findOne({"name":data[0],"pass":data[1]},function(err,auth){
+       if(!auth) {res.send(401);}
+       else {
+           Snacks.findOne({"name":req.params.snackId}, function(err, buy){
         
-        if(parseInt(req.params.quant) <= 0) res.json({message:"Cant buy less than 0!"});
-        if(buy.quant < parseInt(req.params.quant)) res.json({message:"We dont have enough!"});
-        
-        buy.quant = buy.quant - req.params.quant;
-        var price = buy.price * req.params.quant;
-        
-        buy.save((err,b) => {
-           if(err) res.send(err); 
-        });
-        
-        var logo = new Log();
-        logo.buyer = "Kevin";
-        logo.snack = req.params.snackId;
-        logo.quant = req.params.quant;
-        
-        logo.save((err, lo) => {
-            if(err) res.send(err);
-        });
-        
-        res.json({
-            action:"buy",
-            snack:buy.name,
-            quantity:req.params.quant,
-            total:price
-        });
+                if(parseInt(req.params.quant) <= 0) res.json({message:"Cant buy less than 0!"});
+                if(buy.quant < parseInt(req.params.quant)) res.json({message:"We dont have enough!"});
+                
+                buy.quant = buy.quant - req.params.quant;
+                var price = buy.price * req.params.quant;
+                
+                buy.save((err,b) => {
+                if(err) res.send(err); 
+                });
+                
+                var logo = new Log();
+                logo.buyer = auth.name;
+                logo.snack = req.params.snackId;
+                logo.quant = req.params.quant;
+                
+                logo.save((err, lo) => {
+                    if(err) res.send(err);
+                });
+                
+                res.json({
+                    action:"buy",
+                    snack:buy.name,
+                    quantity:req.params.quant,
+                    total:price
+                });
+            });
+       }
     });
 };
 
+// unused function
 exports.getToken = function(req,res){
     res.json(req.headers["authorization"]);
 };
@@ -221,4 +237,28 @@ exports.createUser = function(req,res){
     });
     
     res.json({message:"User created!"});
+};
+
+exports.likeSnack = function(req,res){
+    var hash = req.headers.authorization;
+    hash = hash.replace("Basic ","");
+    var nhash = new Buffer(hash,"base64").toString();
+    
+    var data = nhash.split(":");
+    
+    Users.findOne({"name":data[0],"pass":data[1]},function(err,auth){
+       if(!auth) {res.send(401);}
+       else{
+           Snacks.findOne({"name":req.params.snackId},function(err,snack){
+              if(err) res.send(err);
+              snack.likes = 1;
+              
+              snack.save((err,sn) => {
+                 if(err) res.send(err); 
+              });
+              
+              res.json({message:"You liked this product!"});
+           });
+       }
+    });
 };
