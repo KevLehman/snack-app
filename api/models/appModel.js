@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-
+// Users collection Schema
 var users = new Schema({
   name: {
     type: String
@@ -16,6 +16,8 @@ var users = new Schema({
     default: ['user']
   }
 });
+
+// Snacks collection Schema
 var snacks = new Schema({
     name: {
         type: String
@@ -31,6 +33,8 @@ var snacks = new Schema({
         default: 0
     }
 });
+
+// Buy log Schema
 var log = new Schema({
   buyer: {
     type: String
@@ -47,6 +51,7 @@ var log = new Schema({
   }
 });
 
+// Price log Schema
 var priceLog = new Schema({
   changer: {
     type: String

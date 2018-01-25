@@ -232,11 +232,6 @@ exports.buySnack = function(req,res){
     });
 };
 
-// unused function
-exports.getToken = function(req,res){
-    res.json(req.headers["authorization"]);
-};
-
 //anyone, will be created as normal user
 exports.createUser = function(req,res){
     var user = new Users();
