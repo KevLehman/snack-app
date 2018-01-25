@@ -243,7 +243,11 @@ exports.createUser = function(req,res){
     
     user.name = req.body.name;
     user.pass = req.body.pass;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 8419dad1b57dce0f3903fb98ef9474c416fc2d4c
     user.save((err,us) => {
         if(err) res.send(err);
     });
