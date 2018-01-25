@@ -5,7 +5,7 @@ var express = require('express'),
   Snack = require("./api/models/appModel"),
   bodyParser = require("body-parser");
   
-mongoose.connect("mongodb://localhost/SnackApp");
+mongoose.connect("mongodb://kaleman:Kestar1234@ds161304.mlab.com:61304/snackapp");
   
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
