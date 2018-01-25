@@ -9,7 +9,7 @@ var sortJsonArray = require('sort-json-array');
 
 //anyone can see all snacks
 exports.getAllSnacks = function(req, res){
-    var 
+    var likes = 0;
     var orderby = req.query.orderBy;
     Snacks.find({}, function(err, snack){
         if(err) res.send(err);
