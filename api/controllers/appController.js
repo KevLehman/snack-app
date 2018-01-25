@@ -161,12 +161,13 @@ exports.getLog = function(req,res){
     var data = nhash.split(":");
     
     Users.findOne({"name":data[0],"pass":data[1]},function(err,auth){
-       if(!auth) res.send(401);
-    });
-
-    Log.find({}, function(err, snack){
-        if(err) res.send(err);
-        res.json(snack);
+       if(!auth) {res.send(401);}
+       else {
+            Log.find({}, function(err, snack){
+                if(err) res.send(err);
+                res.json(snack);
+            });
+       }
     });
 };
 
@@ -179,12 +180,13 @@ exports.getPriceLog = function(req,res){
     var data = nhash.split(":");
     
     Users.findOne({"name":data[0],"pass":data[1]},function(err,auth){
-       if(!auth) res.send(401);
-    });
-
-    Log2.find({}, function(err, snack){
-        if(err) res.send(err);
-        res.json(snack);
+       if(!auth) {res.send(401);}
+       else {
+            Log2.find({}, function(err, snack){
+                if(err) res.send(err);
+                res.json(snack);
+            });
+       }
     });
 };
 
