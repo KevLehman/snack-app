@@ -9,11 +9,11 @@ var sortJsonArray = require('sort-json-array');
 
 //anyone can see all snacks
 exports.getAllSnacks = function(req, res){
-    var likes = 0;
+    var type = req.query.order || "name";
     var orderby = req.query.orderBy;
     Snacks.find({}, function(err, snack){
         if(err) res.send(err);
-        res.json(sortJsonArray(snack,"name",orderby));
+        res.json(sortJsonArray(snack,type,orderby));
     });
 };
 
@@ -34,10 +34,19 @@ exports.postASnack = function(req, res){
            if(auth.type != "admin") {res.sendStatus(401);}
            else {
                var snack = new Snacks(req.params);
-               snack.save(function(err, snack1){
-                if(err) res.send(err);
-                    res.json(snack1); 
+               
+               Snacks.findOne({"name":req.params.name}, function(err,sn){
+                   if(sn){
+                        res.json({message:"Item already exists"});     
+                   } else {
+                       snack.save(function(err, snack1){
+                            if(err) res.send(err);
+                                res.json(snack1); 
+                        });
+                   }
                });
+               
+               
            }
        }
     });
@@ -143,6 +152,7 @@ exports.changePrice = function(req,res){
     });   
 };
 
+//only logged users
 exports.getLog = function(req,res){
     var hash = req.headers.authorization;
     hash = hash.replace("Basic ","");
@@ -160,6 +170,7 @@ exports.getLog = function(req,res){
     });
 };
 
+//only logged users
 exports.getPriceLog = function(req,res){
     var hash = req.headers.authorization;
     hash = hash.replace("Basic ","");
@@ -212,7 +223,7 @@ exports.buySnack = function(req,res){
                 
                 res.json({
                     action:"buy",
-                    snack:buy.name,
+                    snack:data[0],
                     quantity:req.params.quant,
                     total:price
                 });
@@ -226,6 +237,7 @@ exports.getToken = function(req,res){
     res.json(req.headers["authorization"]);
 };
 
+//anyone, will be created as normal user
 exports.createUser = function(req,res){
     var user = new Users();
     
@@ -239,6 +251,7 @@ exports.createUser = function(req,res){
     res.json({message:"User created!"});
 };
 
+//only logged users
 exports.likeSnack = function(req,res){
     var hash = req.headers.authorization;
     hash = hash.replace("Basic ","");
@@ -251,7 +264,7 @@ exports.likeSnack = function(req,res){
        else{
            Snacks.findOne({"name":req.params.snackId},function(err,snack){
               if(err) res.send(err);
-              snack.likes = 1;
+              snack.likes = snack.likes + 1;
               
               snack.save((err,sn) => {
                  if(err) res.send(err); 

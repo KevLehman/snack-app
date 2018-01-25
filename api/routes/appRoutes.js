@@ -18,7 +18,7 @@ module.exports = function(app) {
     app.route("/price/:snackId/:price")
         .post(store.changePrice);
         
-    app.route("/snacks/:orderBy?")
+    app.route("/snacks/:orderBy?/:order?")
         .get(store.getAllSnacks);
             
     app.route("/buy/:snackId/:quant")
